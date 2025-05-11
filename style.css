@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <!-- style.css dosyasını linkliyoruz -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Giriş Yap</h2>
+        <form method="POST" action="giris.php">
+            <label for="kullanici_adi">Kullanıcı Adı:</label>
+            <input type="text" name="kullanici_adi" required><br><br>
+
+            <label for="sifre">Şifre:</label>
+            <input type="password" name="sifre" required><br><br>
+
+            <input type="submit" value="Giriş Yap">
+        </form>
+    </div>
+</body>
+</html>

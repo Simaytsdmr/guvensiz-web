@@ -6,29 +6,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $kullanici = $_POST['kullanici_adi'];
     $sifre = $_POST['sifre'];
 
-    // SQL Injection'a karşı güvenli sorgu (Prepared statements kullanacağız)
-    $sql = "SELECT * FROM kullanicilar WHERE kullanici_adi = $1";
+    // Güvenli SQL sorgusu (SQL Injection önlendi)
+    $sql = "SELECT * FROM kullanicilar WHERE kullanici_adi=$1";
     $result = pg_query_params($conn, $sql, array($kullanici));
 
     if (pg_num_rows($result) == 1) {
         $row = pg_fetch_assoc($result);
-        
-        // Şifreyi doğrulama
+
+        // Şifreyi hash ile karşılaştır
         if (password_verify($sifre, $row['sifre'])) {
             $_SESSION['kullanici_adi'] = $row['kullanici_adi'];
-            $_SESSION['rol'] = $row['rol'];
-            header("Location: panel.php");
+            $_SESSION['rol'] = $row['rol']; // Rol bilgisi burada
+            header("Location: panel_guvenli.php");
             exit();
         } else {
             echo "Kullanıcı adı veya şifre hatalı.";
         }
     } else {
-        echo "Kullanıcı adı veya şifre hatalı.";
+        echo "Kullanıcı bulunamadı.";
     }
 }
 ?>
 
-<form method="POST" action="giris.php">
+<form method="POST" action="giris_guvenli.php">
     <label for="kullanici_adi">Kullanıcı Adı:</label>
     <input type="text" name="kullanici_adi" required><br><br>
 
