@@ -2,28 +2,28 @@
 session_start();
 include("veritabani.php");
 
-if (isset($_POST['kullanici_adi']) && isset($_POST['sifre'])) {
-    $kullanici_adi = $_POST['kullanici_adi'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $kullanici = $_POST['kullanici_adi'];
     $sifre = $_POST['sifre'];
 
-    // Kullanıcıyı veritabanında ara
-    $query = "SELECT * FROM kullanicilar WHERE kullanici_adi = '$kullanici_adi' AND sifre = '$sifre'";
-    $result = pg_query($conn, $query);
+    // SQL Injection'a karşı güvenli sorgu (Prepared statements kullanacağız)
+    $sql = "SELECT * FROM kullanicilar WHERE kullanici_adi = $1";
+    $result = pg_query_params($conn, $sql, array($kullanici));
 
-    if (pg_num_rows($result) > 0) {
-        // Kullanıcı bulundu, oturum başlat
-        $_SESSION['kullanici_adi'] = $kullanici_adi;
-        $user = pg_fetch_assoc($result);
-        $_SESSION['rol'] = $user['rol'];
+    if (pg_num_rows($result) == 1) {
+        $row = pg_fetch_assoc($result);
         
-        // Kullanıcının rolüne göre yönlendirme
-        if ($_SESSION['rol'] == 'admin') {
+        // Şifreyi doğrulama
+        if (password_verify($sifre, $row['sifre'])) {
+            $_SESSION['kullanici_adi'] = $row['kullanici_adi'];
+            $_SESSION['rol'] = $row['rol'];
             header("Location: panel.php");
+            exit();
         } else {
-            header("Location: kullanici_panel.php");
+            echo "Kullanıcı adı veya şifre hatalı.";
         }
     } else {
-        echo "Geçersiz kullanıcı adı veya şifre!";
+        echo "Kullanıcı adı veya şifre hatalı.";
     }
 }
 ?>

@@ -1,17 +1,20 @@
 <?php
 session_start();
-include("veritabani.php");
 
 // Oturum kontrolü
-if (!isset($_SESSION['kullanici_adi']) || $_SESSION['rol'] != 'admin') {
+if (!isset($_SESSION['kullanici_adi'])) {
     header("Location: giris.php");
     exit();
 }
 
-echo "Hoşgeldiniz, " . $_SESSION['kullanici_adi'] . "! (Admin Paneli)";
-
+// Rol kontrolü
+$rol = $_SESSION['rol'];
+if ($rol != 'admin' && $rol != 'editor') {
+    echo "Bu sayfayı görüntülemeye yetkiniz yok.";
+    exit();
+}
 ?>
 
-<!-- Admin paneli içeriği -->
-<p>Admin işlemleri burada olacak.</p>
+<h2>Hoşgeldin, <?php echo $_SESSION['kullanici_adi']; ?>!</h2>
+<p>Rolünüz: <?php echo $_SESSION['rol']; ?></p>
 <a href="cikis.php">Çıkış Yap</a>
